@@ -13,9 +13,9 @@ Class EasyBackupRestore{
 	var $table_list; //nama-nama tabel
 	var $table_desc; //deskripsi jenis tabel (TABLE/VIEW)
 
-	public function __construct($dbname, $user, $pass, $hostname="localhost"){
+	public function __construct($arr=array("host"=>"localhost", "dbname"=>"", "username"=>"root", "password"=>"")){
 		//koneksi database sengaja diduplikat, agar tetap bisa berjalan untuk pengguna dengan engine database yang lain
-		$db = new PDO('mysql:host='.$hostname.';dbname='.$dbname.';charset=utf8',$user,$pass);
+		$db = new PDO('mysql:host='.$arr['host'].';dbname='.$arr['dbname'].';charset=utf8',$arr['username'],$arr['password']);
 		$this->db = $db;
 
 		//listing nama tabel di database
@@ -88,7 +88,7 @@ Class EasyBackupRestore{
 		}
 
 
-		if(is_null($backuptype)){
+		if(!is_null($backuptype)){
 			$location = $filename;
 			$file = fopen($location, "w");
 			fwrite($file, $output);
@@ -96,7 +96,9 @@ Class EasyBackupRestore{
 			return $location;
 		}
 		else{
-			return $output;
+			$namafile = "Backup-".date("Y-m-d-H-i-s").".sql";
+			header('Content-Disposition: attachment; filename="'.$namafile.'"');			
+			echo $output;
 		}
 	}
 
